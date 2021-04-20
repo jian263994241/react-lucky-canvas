@@ -112,7 +112,7 @@ const ReactLuckyWheel: React.FC<LuckyWheelProps> = React.forwardRef(
     const {
       width,
       height = width,
-      id = 'lucky' + idxx(),
+      id: idProp,
       blocks,
       buttons,
       prizes = [],
@@ -123,6 +123,8 @@ const ReactLuckyWheel: React.FC<LuckyWheelProps> = React.forwardRef(
       ...rest
     } = props;
 
+    const defaultId = React.useMemo(() => 'lucky_' + idxx(), []);
+    const id = idProp || defaultId;
     const intanceRef = React.useRef<any>(null);
 
     React.useImperativeHandle(
@@ -145,7 +147,7 @@ const ReactLuckyWheel: React.FC<LuckyWheelProps> = React.forwardRef(
     );
 
     React.useEffect(() => {
-      if (prizes.length > 0) {
+      if (prizes.length > 0 && !intanceRef.current) {
         intanceRef.current = new LuckyWheel(
           {
             el: `#${id}`,
