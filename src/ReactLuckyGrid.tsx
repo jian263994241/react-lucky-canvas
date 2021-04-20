@@ -43,6 +43,7 @@ type Prize = {
   x: number; // 相对坐标x （如果是标准的 3*3 宫格，那 x 的范围是 0 ~ 2）
   y: number; // 相对坐标y （如果是标准的 3*3 宫格，那 y 的范围是 0 ~ 2）
   name?: string;
+  id?: string | number;
   col?: number; // 横向合并格子 （用来横向合并单元格，默认为 1）
   row?: number; //纵向合并格子 （用来纵向合并单元格，默认为 1）
   borderRadius?: number; //格子圆角 （可继承 defaultStyle 圆角，默认为 20）
@@ -106,7 +107,7 @@ type ActiveStyle = {
   shadow?: string; //格子阴影 （由 4 个值组成：1.水平位置、2.垂直位置、3.模糊度、4.阴影颜色）
 };
 
-export interface ReactLuckyGridProps {
+export interface LuckyGridProps {
   /**
    * root div style
    */
@@ -131,7 +132,7 @@ export interface ReactLuckyGridProps {
   onEnd?: (prize: Prize) => void; //结束回调
 }
 
-const ReactLuckyGrid: React.FC<ReactLuckyGridProps> = React.forwardRef(
+const ReactLuckyGrid: React.FC<LuckyGridProps> = React.forwardRef(
   (props, ref) => {
     const {
       width,
@@ -140,7 +141,7 @@ const ReactLuckyGrid: React.FC<ReactLuckyGridProps> = React.forwardRef(
       activeStyle,
       blocks,
       buttons,
-      prizes,
+      prizes = [],
       defaultStyle,
       defaultConfig,
       onStart,
@@ -149,17 +150,6 @@ const ReactLuckyGrid: React.FC<ReactLuckyGridProps> = React.forwardRef(
     } = props;
 
     const intanceRef = React.useRef<any>(null);
-
-    const LuckyConfig = {
-      activeStyle,
-      blocks,
-      buttons,
-      prizes,
-      defaultConfig,
-      defaultStyle,
-      start: onStart,
-      end: onEnd,
-    };
 
     React.useImperativeHandle(
       ref,
@@ -181,16 +171,26 @@ const ReactLuckyGrid: React.FC<ReactLuckyGridProps> = React.forwardRef(
     );
 
     React.useEffect(() => {
-      intanceRef.current = new LuckyGrid(
-        {
-          el: `#${id}`,
-          width: getPx(width),
-          height: getPx(height),
-        },
-
-        LuckyConfig
-      ); // eslint-disable-next-line
-    }, [id, width, height, , JSON.stringify(LuckyConfig)]);
+      if (prizes.length > 0) {
+        intanceRef.current = new LuckyGrid(
+          {
+            el: `#${id}`,
+            width: getPx(width),
+            height: getPx(height),
+          },
+          {
+            activeStyle,
+            blocks,
+            buttons,
+            prizes,
+            defaultConfig,
+            defaultStyle,
+            start: onStart,
+            end: onEnd,
+          }
+        );
+      }
+    }, [id, width, height, prizes]);
 
     return <div id={id} {...rest}></div>;
   }

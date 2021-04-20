@@ -37,6 +37,7 @@ type Block = {
  */
 type Prize = {
   name?: string;
+  id?: string | number;
   background?: string; //格子背景色 （可继承 defaultStyle 背景色，默认为 'rgba(0,0,0,0)'）
   fonts?: Font[]; //文字列表
   imgs?: Img[]; //图标
@@ -82,7 +83,7 @@ type DefaultStyle = {
   lengthLimit?: string | number; // 换行宽度限制 （格式为：90 | '90px' | '90%'，默认为 '90%'）
 };
 
-export interface ReactLuckyWheelProps {
+export interface LuckyWheelProps {
   /**
    * root div style
    */
@@ -106,7 +107,7 @@ export interface ReactLuckyWheelProps {
   onEnd?: (prize: Prize) => void; //结束回调
 }
 
-const ReactLuckyWheel: React.FC<ReactLuckyWheelProps> = React.forwardRef(
+const ReactLuckyWheel: React.FC<LuckyWheelProps> = React.forwardRef(
   (props, ref) => {
     const {
       width,
@@ -114,7 +115,7 @@ const ReactLuckyWheel: React.FC<ReactLuckyWheelProps> = React.forwardRef(
       id = 'lucky' + idxx(),
       blocks,
       buttons,
-      prizes,
+      prizes = [],
       defaultStyle,
       defaultConfig,
       onStart,
@@ -123,16 +124,6 @@ const ReactLuckyWheel: React.FC<ReactLuckyWheelProps> = React.forwardRef(
     } = props;
 
     const intanceRef = React.useRef<any>(null);
-
-    const LuckyConfig = {
-      blocks,
-      buttons,
-      prizes,
-      defaultConfig,
-      defaultStyle,
-      start: onStart,
-      end: onEnd,
-    };
 
     React.useImperativeHandle(
       ref,
@@ -154,16 +145,25 @@ const ReactLuckyWheel: React.FC<ReactLuckyWheelProps> = React.forwardRef(
     );
 
     React.useEffect(() => {
-      intanceRef.current = new LuckyWheel(
-        {
-          el: `#${id}`,
-          width: getPx(width),
-          height: getPx(height),
-        },
-
-        LuckyConfig
-      ); // eslint-disable-next-line
-    }, [id, width, height, , JSON.stringify(LuckyConfig)]);
+      if (prizes.length > 0) {
+        intanceRef.current = new LuckyWheel(
+          {
+            el: `#${id}`,
+            width: getPx(width),
+            height: getPx(height),
+          },
+          {
+            blocks,
+            buttons,
+            prizes,
+            defaultConfig,
+            defaultStyle,
+            start: onStart,
+            end: onEnd,
+          }
+        );
+      }
+    }, [id, width, height, prizes]);
 
     return <div id={id} {...rest}></div>;
   }

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { ReactLuckyGrid, ReactLuckyGridProps } from '../src';
+import { LuckyGrid, LuckyGridProps } from '../src';
 
 const meta: Meta = {
   title: 'LuckyGrid',
-  component: ReactLuckyGrid,
+  component: LuckyGrid,
   argTypes: {
     children: {
       control: {
@@ -19,9 +19,7 @@ const meta: Meta = {
 
 export default meta;
 
-const Template: Story<ReactLuckyGridProps> = args => (
-  <ReactLuckyGrid {...args} />
-);
+const Template: Story<LuckyGridProps> = args => <LuckyGrid {...args} />;
 
 // By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
 // https://storybook.js.org/docs/react/workflows/unit-testing
@@ -97,4 +95,4 @@ Default.args = {
     alert('End');
   },
   ref: luckyRef,
-} as ReactLuckyGridProps;
+} as LuckyGridProps;
