@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -10,6 +10,11 @@
   "engines": {
     "node": ">=10"
   },
+  "repository": {
+    "url": "https://github.com/jian263994241/react-lucky-canvas",
+    "type": "git"
+  },
+  "homepage": "https://jian263994241.github.io/react-lucky-canvas/storybook-static",
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
