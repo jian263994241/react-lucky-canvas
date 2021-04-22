@@ -107,7 +107,18 @@ type ActiveStyle = {
   shadow?: string; //格子阴影 （由 4 个值组成：1.水平位置、2.垂直位置、3.模糊度、4.阴影颜色）
 };
 
-export interface LuckyGridProps {
+type Callback = {
+  onStart?: () => void; //开始回调
+  onEnd?: (prize: Prize) => void; //结束回调
+};
+
+type OutRef = React.Ref<
+  Callback & {
+    rootRef: React.Ref<HTMLDivElement>;
+  }
+>;
+
+export interface LuckyGridProps extends Callback {
   /**
    * root div style
    */
@@ -116,10 +127,13 @@ export interface LuckyGridProps {
    * root div classname
    */
   className?: string;
+  /**
+   * id
+   */
+  id?: string;
   width: number | string;
   height?: number | string;
-  id?: string;
-  ref?: React.Ref<any>;
+  ref?: OutRef;
   activeStyle?: ActiveStyle;
   blocks?: Block[];
   buttons?: Button[];
@@ -128,43 +142,94 @@ export interface LuckyGridProps {
   defaultConfig?: DefaultConfig;
   rows?: number; //设置布局有几行 （默认为 3）
   cols?: number; //设置布局有几列 （默认为 3）
-  onStart?: () => void; //开始回调
-  onEnd?: (prize: Prize) => void; //结束回调
 }
 
 const ReactLuckyGrid: React.FC<LuckyGridProps> = React.forwardRef(
   (props, ref) => {
     const {
-      width,
+      width = 300,
       height = width,
       id: idProp,
-      activeStyle,
-      blocks,
-      buttons,
+      activeStyle = {},
+      blocks = [],
+      buttons = [],
+      rows = 3,
+      cols = 3,
       prizes = [],
-      defaultStyle,
-      defaultConfig,
+      defaultStyle = {},
+      defaultConfig = {},
       onStart,
       onEnd,
       ...rest
     } = props;
 
-    const defaultId = React.useMemo(() => 'lucky_' + idxx(), []);
-    const id = idProp || defaultId;
-    const intanceRef = React.useRef<any>(null);
+    const rootRef = React.useRef<HTMLDivElement>(null);
+    const { current: id } = React.useRef(idProp || 'lucky_' + idxx());
+    const luckyCanvasRef = React.useRef<InstanceType<typeof LuckyGrid>>(null);
+
+    React.useEffect(() => {
+      if (id && !luckyCanvasRef.current) {
+        luckyCanvasRef.current = new LuckyGrid(
+          { el: `#${id}`, width: getPx(width), height: getPx(height) },
+          {}
+        );
+      }
+
+      const options = {
+        activeStyle,
+        blocks,
+        buttons,
+        cols,
+        defaultConfig,
+        defaultStyle,
+        onEnd,
+        onStart,
+        prizes,
+        rows,
+      };
+
+      const { current: luckyCanvas } = luckyCanvasRef;
+
+      luckyCanvas.activeStyle = options.activeStyle;
+      luckyCanvas.blocks = options.blocks;
+      luckyCanvas.buttons = options.buttons;
+      luckyCanvas.cols = options.cols;
+      luckyCanvas.defaultConfig = options.defaultConfig;
+      luckyCanvas.defaultStyle = options.defaultStyle;
+      luckyCanvas.endCallback = options.onEnd;
+      luckyCanvas.prizes = options.prizes;
+      luckyCanvas.rows = options.rows;
+      luckyCanvas.startCallback = options.onStart;
+    }, [
+      activeStyle,
+      blocks,
+      buttons,
+      cols,
+      defaultConfig,
+      defaultStyle,
+      id,
+      onEnd,
+      onStart,
+      prizes,
+      rows,
+    ]);
 
     React.useImperativeHandle(
       ref,
       () => {
         return {
+          rootRef: rootRef,
           play: () => {
-            if (intanceRef.current) {
-              intanceRef.current.play();
+            const { current: luckyCanvas } = luckyCanvasRef;
+
+            if (luckyCanvas) {
+              luckyCanvas.play();
             }
           },
           stop: (index: number) => {
-            if (intanceRef.current) {
-              intanceRef.current.stop(index);
+            const { current: luckyCanvas } = luckyCanvasRef;
+            if (luckyCanvas) {
+              luckyCanvas.stop(index);
             }
           },
         };
@@ -172,29 +237,7 @@ const ReactLuckyGrid: React.FC<LuckyGridProps> = React.forwardRef(
       []
     );
 
-    React.useEffect(() => {
-      if (prizes.length > 0 && !intanceRef.current) {
-        intanceRef.current = new LuckyGrid(
-          {
-            el: `#${id}`,
-            width: getPx(width),
-            height: getPx(height),
-          },
-          {
-            activeStyle,
-            blocks,
-            buttons,
-            prizes,
-            defaultConfig,
-            defaultStyle,
-            start: onStart,
-            end: onEnd,
-          }
-        );
-      }
-    }, [id, width, height, prizes]);
-
-    return <div id={id} {...rest}></div>;
+    return <div {...rest} id={id} ref={rootRef}></div>;
   }
 );
 

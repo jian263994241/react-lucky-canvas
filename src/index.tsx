@@ -1,4 +1,4 @@
-export { default as LuckyGrid } from './ReactLuckyGrid';
-export { default as LuckyWheel } from './ReactLuckyWheel';
-export * from './ReactLuckyGrid';
-export * from './ReactLuckyWheel';
+export { default as LuckyGrid } from './LuckyGrid';
+export { default as LuckyWheel } from './LuckyWheel';
+export * from './LuckyGrid';
+export * from './LuckyWheel';
