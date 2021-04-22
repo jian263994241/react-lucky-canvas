@@ -1,4 +1,20 @@
 declare module 'lucky-canvas' {
-  export const LuckyWheel: any;
-  export const LuckyGrid: any;
+  export class LuckyWheel {
+    constructor(
+      base: { el: string; width: string; height: string },
+      options: any
+    ) {}
+    paly: () => void;
+    stop: (index: number) => void;
+    [prop: string]: any;
+  }
+  export class LuckyGrid {
+    constructor(
+      base: { el: string; width: string; height: string },
+      options: any
+    ) {}
+    paly: () => void;
+    stop: (index: number) => void;
+    [prop: string]: any;
+  }
 }

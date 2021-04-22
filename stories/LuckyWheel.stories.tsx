@@ -5,13 +5,6 @@ import { LuckyWheel, LuckyWheelProps } from '../src';
 const meta: Meta = {
   title: 'LuckyWheel',
   component: LuckyWheel,
-  argTypes: {
-    children: {
-      control: {
-        type: 'text',
-      },
-    },
-  },
   parameters: {
     controls: { expanded: true },
   },

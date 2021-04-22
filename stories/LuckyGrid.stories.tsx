@@ -5,13 +5,7 @@ import { LuckyGrid, LuckyGridProps } from '../src';
 const meta: Meta = {
   title: 'LuckyGrid',
   component: LuckyGrid,
-  argTypes: {
-    children: {
-      control: {
-        type: 'text',
-      },
-    },
-  },
+  // argTypes: {},
   parameters: {
     controls: { expanded: true },
   },

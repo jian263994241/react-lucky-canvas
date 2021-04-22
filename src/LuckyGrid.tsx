@@ -107,18 +107,7 @@ type ActiveStyle = {
   shadow?: string; //格子阴影 （由 4 个值组成：1.水平位置、2.垂直位置、3.模糊度、4.阴影颜色）
 };
 
-type Callback = {
-  onStart?: () => void; //开始回调
-  onEnd?: (prize: Prize) => void; //结束回调
-};
-
-type OutRef = React.Ref<
-  Callback & {
-    rootRef: React.Ref<HTMLDivElement>;
-  }
->;
-
-export interface LuckyGridProps extends Callback {
+export interface LuckyGridProps {
   /**
    * root div style
    */
@@ -131,20 +120,67 @@ export interface LuckyGridProps extends Callback {
    * id
    */
   id?: string;
+  /**
+   * 宽度
+   */
   width: number | string;
+  /**
+   * 可选高度, 如果不设置,取值width
+   */
   height?: number | string;
-  ref?: OutRef;
-  activeStyle?: ActiveStyle;
+  /**
+   * 背景 - blocks
+   * @link https://100px.net/docs/grid/blocks.html
+   */
   blocks?: Block[];
-  buttons?: Button[];
+  /**
+   * 奖品 - prizes
+   * @link https://100px.net/docs/grid/prizes.html
+   */
   prizes?: Prize[];
-  defaultStyle?: DefaultStyle;
+  /**
+   * 抽奖按钮 - buttons
+   * @link https://100px.net/docs/grid/buttons.html
+   */
+  buttons?: Button[];
+  /**
+   * 默认配置 - defaultConfig
+   * @link https://100px.net/docs/grid/defaultConfig.html
+   */
   defaultConfig?: DefaultConfig;
-  rows?: number; //设置布局有几行 （默认为 3）
-  cols?: number; //设置布局有几列 （默认为 3）
+  /**
+   * 默认样式 - defaultStyle
+   * @link https://100px.net/docs/grid/defaultStyle.html
+   */
+  defaultStyle?: DefaultStyle;
+  /**
+   * 中奖标记样式 - activeStyle
+   * @link https://100px.net/docs/grid/activeStyle.html
+   */
+  activeStyle?: ActiveStyle;
+  /**
+   * 格子布局 - rows & cols
+   * 设置布局有几行 （默认为 3）
+   */
+  rows?: number;
+  /**
+   * 格子布局 - rows & cols
+   * 设置布局有几列 （默认为 3）
+   */
+  cols?: number;
+  /**
+   * 回调 & 方法 start
+   * @link https://100px.net/docs/grid/methods.html
+   */
+  onStart?: () => void; //开始回调
+  /**
+   * 回调 & 方法 end
+   * @link https://100px.net/docs/grid/methods.html
+   */
+  onEnd?: (prize: Prize) => void; //结束回调
 }
 
-const ReactLuckyGrid: React.FC<LuckyGridProps> = React.forwardRef(
+const ReactLuckyGrid = React.forwardRef<LuckyGrid, LuckyGridProps>(
   (props, ref) => {
     const {
       width = 300,
@@ -163,18 +199,21 @@ const ReactLuckyGrid: React.FC<LuckyGridProps> = React.forwardRef(
       ...rest
     } = props;
 
-    const rootRef = React.useRef<HTMLDivElement>(null);
     const { current: id } = React.useRef(idProp || 'lucky_' + idxx());
-    const luckyCanvasRef = React.useRef<InstanceType<typeof LuckyGrid>>(null);
+    const [luckyCanvas, setLuckyCanvas] = React.useState<LuckyGrid>();
 
     React.useEffect(() => {
-      if (id && !luckyCanvasRef.current) {
-        luckyCanvasRef.current = new LuckyGrid(
-          { el: `#${id}`, width: getPx(width), height: getPx(height) },
-          {}
+      if (id && !luckyCanvas) {
+        setLuckyCanvas(
+          new LuckyGrid(
+            { el: `#${id}`, width: getPx(width), height: getPx(height) },
+            {}
+          )
         );
       }
+    }, [id]);
 
+    React.useEffect(() => {
       const options = {
         activeStyle,
         blocks,
@@ -188,26 +227,26 @@ const ReactLuckyGrid: React.FC<LuckyGridProps> = React.forwardRef(
         rows,
       };
 
-      const { current: luckyCanvas } = luckyCanvasRef;
-
-      luckyCanvas.activeStyle = options.activeStyle;
-      luckyCanvas.blocks = options.blocks;
-      luckyCanvas.buttons = options.buttons;
-      luckyCanvas.cols = options.cols;
-      luckyCanvas.defaultConfig = options.defaultConfig;
-      luckyCanvas.defaultStyle = options.defaultStyle;
-      luckyCanvas.endCallback = options.onEnd;
-      luckyCanvas.prizes = options.prizes;
-      luckyCanvas.rows = options.rows;
-      luckyCanvas.startCallback = options.onStart;
+      if (luckyCanvas) {
+        luckyCanvas.activeStyle = options.activeStyle;
+        luckyCanvas.blocks = options.blocks;
+        luckyCanvas.buttons = options.buttons;
+        luckyCanvas.cols = options.cols;
+        luckyCanvas.defaultConfig = options.defaultConfig;
+        luckyCanvas.defaultStyle = options.defaultStyle;
+        luckyCanvas.endCallback = options.onEnd;
+        luckyCanvas.prizes = options.prizes;
+        luckyCanvas.rows = options.rows;
+        luckyCanvas.startCallback = options.onStart;
+      }
     }, [
+      luckyCanvas,
       activeStyle,
       blocks,
       buttons,
       cols,
       defaultConfig,
       defaultStyle,
-      id,
       onEnd,
       onStart,
       prizes,
@@ -217,27 +256,12 @@ const ReactLuckyGrid: React.FC<LuckyGridProps> = React.forwardRef(
     React.useImperativeHandle(
       ref,
       () => {
-        return {
-          rootRef: rootRef,
-          play: () => {
-            const { current: luckyCanvas } = luckyCanvasRef;
-
-            if (luckyCanvas) {
-              luckyCanvas.play();
-            }
-          },
-          stop: (index: number) => {
-            const { current: luckyCanvas } = luckyCanvasRef;
-            if (luckyCanvas) {
-              luckyCanvas.stop(index);
-            }
-          },
-        };
+        return luckyCanvas as LuckyGrid;
       },
-      []
+      [luckyCanvas]
     );
 
-    return <div {...rest} id={id} ref={rootRef}></div>;
+    return <div {...rest} id={id}></div>;
   }
 );
 

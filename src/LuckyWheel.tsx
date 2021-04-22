@@ -83,17 +83,9 @@ type DefaultStyle = {
   lengthLimit?: string | number; // 换行宽度限制 （格式为：90 | '90px' | '90%'，默认为 '90%'）
 };
 
-type Callback = {
-  onStart?: () => void; //开始回调
-  onEnd?: (prize: Prize) => void; //结束回调
-};
-
-type OutRef = React.Ref<
-  Callback & {
-    rootRef: React.Ref<HTMLDivElement>;
-  }
->;
-
+/**
+ * Props
+ */
 export interface LuckyWheelProps {
   /**
    * root div style
@@ -107,19 +99,52 @@ export interface LuckyWheelProps {
    * id
    */
   id?: string;
+  /**
+   * 宽度
+   */
   width: number | string;
+  /**
+   * 可选高度, 如果不设置,取值width
+   */
   height?: number | string;
-  ref?: OutRef;
+  /**
+   * 背景 - blocks
+   * @link https://100px.net/docs/wheel/blocks.html
+   */
   blocks?: Block[];
-  buttons?: Button[];
+  /**
+   * 奖品 - prizes
+   * @link https://100px.net/docs/wheel/prizes.html
+   */
   prizes?: Prize[];
-  defaultStyle?: DefaultStyle;
+  /**
+   * 抽奖按钮 - buttons
+   * @link https://100px.net/docs/wheel/buttons.html
+   */
+  buttons?: Button[];
+  /**
+   * 默认配置 - defaultConfig
+   * @link https://100px.net/docs/wheel/defaultConfig.html
+   */
   defaultConfig?: DefaultConfig;
+  /**
+   * 默认样式 - defaultStyle
+   * @link https://100px.net/docs/wheel/defaultStyle.html
+   */
+  defaultStyle?: DefaultStyle;
+  /**
+   * 回调 & 方法 start
+   * @link https://100px.net/docs/wheel/methods.html
+   */
   onStart?: () => void; //开始回调
+  /**
+   * 回调 & 方法 end
+   * @link https://100px.net/docs/wheel/methods.html
+   */
   onEnd?: (prize: Prize) => void; //结束回调
 }
 
-const ReactLuckyWheel: React.FC<LuckyWheelProps> = React.forwardRef(
+const ReactLuckyWheel = React.forwardRef<LuckyWheel, LuckyWheelProps>(
   (props, ref) => {
     const {
       width = 300,
@@ -135,18 +160,19 @@ const ReactLuckyWheel: React.FC<LuckyWheelProps> = React.forwardRef(
       ...rest
     } = props;
 
-    const rootRef = React.useRef<HTMLDivElement>(null);
     const { current: id } = React.useRef(idProp || 'lucky_' + idxx());
-    const luckyCanvasRef = React.useRef<InstanceType<typeof LuckyWheel>>(null);
+    const [luckyCanvas, setLuckyCanvas] = React.useState<LuckyWheel>();
 
     React.useEffect(() => {
-      if (id && !luckyCanvasRef.current) {
-        luckyCanvasRef.current = new LuckyWheel(
+      setLuckyCanvas(
+        new LuckyWheel(
           { el: `#${id}`, width: getPx(width), height: getPx(height) },
           {}
-        );
-      }
+        )
+      );
+    }, [id]);
 
+    React.useEffect(() => {
       const options = {
         blocks,
         buttons,
@@ -157,16 +183,17 @@ const ReactLuckyWheel: React.FC<LuckyWheelProps> = React.forwardRef(
         prizes,
       };
 
-      const { current: luckyCanvas } = luckyCanvasRef;
-
-      luckyCanvas.blocks = options.blocks;
-      luckyCanvas.buttons = options.buttons;
-      luckyCanvas.defaultConfig = options.defaultConfig;
-      luckyCanvas.defaultStyle = options.defaultStyle;
-      luckyCanvas.endCallback = options.onEnd;
-      luckyCanvas.prizes = options.prizes;
-      luckyCanvas.startCallback = options.onStart;
+      if (luckyCanvas) {
+        luckyCanvas.blocks = options.blocks;
+        luckyCanvas.buttons = options.buttons;
+        luckyCanvas.defaultConfig = options.defaultConfig;
+        luckyCanvas.defaultStyle = options.defaultStyle;
+        luckyCanvas.endCallback = options.onEnd;
+        luckyCanvas.prizes = options.prizes;
+        luckyCanvas.startCallback = options.onStart;
+      }
     }, [
+      luckyCanvas,
       blocks,
       buttons,
       defaultConfig,
@@ -180,26 +207,12 @@ const ReactLuckyWheel: React.FC<LuckyWheelProps> = React.forwardRef(
     React.useImperativeHandle(
       ref,
       () => {
-        return {
-          rootRef: rootRef,
-          play: () => {
-            const { current: luckyCanvas } = luckyCanvasRef;
-            if (luckyCanvas) {
-              luckyCanvas.play();
-            }
-          },
-          stop: (index: number) => {
-            const { current: luckyCanvas } = luckyCanvasRef;
-            if (luckyCanvas) {
-              luckyCanvas.stop(index);
-            }
-          },
-        };
+        return luckyCanvas as LuckyWheel;
       },
-      []
+      [luckyCanvas]
     );
 
-    return <div {...rest} ref={rootRef} id={id}></div>;
+    return <div {...rest} id={id}></div>;
   }
 );
 
