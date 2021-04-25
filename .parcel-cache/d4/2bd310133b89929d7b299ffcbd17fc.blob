@@ -1,0 +1,13 @@
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "getPx", function () {
+  return getPx;
+});
+_parcelHelpers.export(exports, "idxx", function () {
+  return idxx;
+});
+const getPx = n => typeof n === 'number' ? `${n}px` : n;
+const idxx = (mask = 'xxxxxxxxxx', map = '0123456789abcdef') => {
+  const length = map.length;
+  return mask.replace(/x/g, () => map[Math.floor(Math.random() * length)]);
+};

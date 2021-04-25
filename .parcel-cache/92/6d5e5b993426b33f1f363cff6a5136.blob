@@ -1,0 +1,84 @@
+var helpers = require("../../../../.config/yarn/global/node_modules/@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+helpers.prelude(module);
+try {
+  var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+  _parcelHelpers.defineInteropFlag(exports);
+  var _react = require('react');
+  var _luckyCanvas = require('lucky-canvas');
+  var _utils = require('./utils');
+  var _jsxFileName = "/Users/jianl/Documents/modules/react-lucky-canvas/src/LuckyWheel.tsx", _s = $RefreshSig$();
+  function _extends() {
+    _extends = Object.assign || (function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    });
+    return _extends.apply(this, arguments);
+  }
+  const ReactLuckyWheel = /*#__PURE__*/_react.forwardRef(_c = _s((props, ref) => {
+    _s();
+    const {width = 300, height = width, id: idProp, blocks, buttons, prizes = [], defaultStyle = {}, defaultConfig = {}, onStart, onEnd, ...rest} = props;
+    const {current: id} = _react.useRef(idProp || 'lucky_' + _utils.idxx());
+    const [luckyCanvas, setLuckyCanvas] = _react.useState();
+    _react.useEffect(() => {
+      setLuckyCanvas(new _luckyCanvas.LuckyWheel({
+        el: `#${id}`,
+        width: _utils.getPx(width),
+        height: _utils.getPx(height)
+      }, {}));
+    }, [id]);
+    _react.useEffect(() => {
+      const options = {
+        blocks,
+        buttons,
+        defaultConfig,
+        defaultStyle,
+        onEnd,
+        onStart,
+        prizes
+      };
+      if (luckyCanvas) {
+        luckyCanvas.blocks = options.blocks;
+        luckyCanvas.buttons = options.buttons;
+        luckyCanvas.defaultConfig = options.defaultConfig;
+        luckyCanvas.defaultStyle = options.defaultStyle;
+        luckyCanvas.endCallback = options.onEnd;
+        luckyCanvas.prizes = options.prizes;
+        luckyCanvas.startCallback = options.onStart;
+      }
+    }, [luckyCanvas, blocks, buttons, defaultConfig, defaultStyle, id, onEnd, onStart, prizes]);
+    _react.useImperativeHandle(ref, () => {
+      return luckyCanvas;
+    }, [luckyCanvas]);
+    return (
+      /*#__PURE__*/_react.createElement("div", _extends({}, rest, {
+        id: id,
+        __self: undefined,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 215,
+          columnNumber: 12
+        }
+      }))
+    );
+  }, "UB4Bt6e47aanbyWy525GI3zBnYE=", false, function () {
+    return [_react.useImperativeHandle];
+  }));
+  _c2 = ReactLuckyWheel;
+  exports.default = ReactLuckyWheel;
+  var _c, _c2;
+  $RefreshReg$(_c, "ReactLuckyWheel$React.forwardRef");
+  $RefreshReg$(_c2, "ReactLuckyWheel");
+  helpers.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}

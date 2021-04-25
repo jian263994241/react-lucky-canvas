@@ -1,0 +1,141 @@
+var helpers = require("../../../../.config/yarn/global/node_modules/@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+helpers.prelude(module);
+try {
+  var _react = require('react');
+  var _reactDom = require('react-dom');
+  var _src = require('../src');
+  var _jsxFileName = "/Users/jianl/Documents/modules/react-lucky-canvas/example/index.tsx";
+  function _extends() {
+    _extends = Object.assign || (function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    });
+    return _extends.apply(this, arguments);
+  }
+  const createPrizes = p => {
+    return p.map((item, index) => {
+      return {
+        ...item,
+        background: index % 2 == 0 ? '#f8d384' : '#f9e3bb'
+      };
+    });
+  };
+  const config = {
+    blocks: [{
+      background: '#FBEBC9',
+      padding: '10px'
+    }, {
+      background: '#E96A3D',
+      padding: '10px'
+    }],
+    prizes: createPrizes([{
+      fonts: [{
+        text: '1元红包',
+        top: '20%'
+      }]
+    }, {
+      fonts: [{
+        text: '2元红包',
+        top: '20%'
+      }]
+    }, {
+      fonts: [{
+        text: '3元红包',
+        top: '20%'
+      }]
+    }, {
+      fonts: [{
+        text: '4元红包',
+        top: '20%'
+      }]
+    }, {
+      fonts: [{
+        text: '5元红包',
+        top: '20%'
+      }]
+    }, {
+      fonts: [{
+        text: '6元红包',
+        top: '20%'
+      }]
+    }, {
+      fonts: [{
+        text: '7元红包',
+        top: '20%'
+      }]
+    }, {
+      fonts: [{
+        text: '8元红包',
+        top: '20%'
+      }]
+    }]),
+    buttons: [{
+      radius: '40px',
+      background: '#d64737'
+    }, {
+      radius: '35px',
+      background: '#f6c66f',
+      pointer: true
+    }, {
+      radius: '30px',
+      background: '#fff',
+      fonts: [{
+        text: '开始',
+        top: '-13px'
+      }]
+    }],
+    defaultStyle: {
+      fontSize: '14px',
+      fontColor: '#88410E',
+      background: '#FBEBCB',
+      shadow: '2px, 2px, 0.5, #000'
+    }
+  };
+  const App = () => {
+    const luckyRef = _react.useRef();
+    return (
+      /*#__PURE__*/_react.createElement(_src.LuckyWheel, _extends({}, config, {
+        width: 300,
+        ref: luckyRef,
+        onStart: () => {
+          if (luckyRef.current) {
+            luckyRef.current.play();
+            setTimeout(() => {
+              luckyRef.current.stop(2);
+            }, 2000);
+          }
+        },
+        onEnd: () => {
+          console.log('End');
+        },
+        __self: undefined,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 53,
+          columnNumber: 5
+        }
+      }))
+    );
+  };
+  _reactDom.render(/*#__PURE__*/_react.createElement(App, {
+    __self: undefined,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 73,
+      columnNumber: 17
+    }
+  }), document.getElementById('root'));
+  helpers.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
